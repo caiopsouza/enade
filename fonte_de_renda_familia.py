@@ -86,10 +86,10 @@ ax = data_sorted.plot.scatter(
 )
 
 plt.title('Comparativo da renda pessoal e familiar\n', fontsize=20)
-plt.xlabel('')
+plt.xlabel('\nSalários mínimos (Ano ref. 2018, R$ 954,00)', fontsize=16)
 plt.ylabel('')
 
 plt.tight_layout()
-#plt.show()
-plt.savefig('plots/situacao-finaceira-comparativo.png', transparent=True)
+plt.show()
+#plt.savefig('plots/situacao-finaceira-comparativo.png', transparent=True)
 

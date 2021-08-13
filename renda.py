@@ -6,7 +6,8 @@ from charts_params import renda_colors
 def load_and_prepare_data():
     df = pd.read_csv('data/microdados_enade_2019/3.DADOS/microdados_enade_2019.txt', sep=";")
 
-    df.drop(df[df.QE_I08 == ' '].index, inplace=True)
+    df.drop(df[df.QE_I04 == ' '].index, inplace=True)
+    df.drop(df[df.QE_I05 == ' '].index, inplace=True)
 
     return df
 
@@ -19,6 +20,8 @@ def count_and_rename_labels(df, labels, normalize=False):
 
 
 def plot_pie(df, labels, title):
+    print(df)
+
     ax = count_and_rename_labels(df, labels) \
         .plot.pie(figsize=(12.8, 8),
                   colors=renda_colors,
@@ -35,14 +38,14 @@ def plot_pie(df, labels, title):
               va='baseline',
               x=mid)
 
-    plt.suptitle(f'Quantidade total de alunos: {df.count()}\nRenda mediana: 3.75 (R$ 3577,50)',
+    plt.suptitle(f'Quantidade total de alunos: {df.count() / 2}',
                  fontsize=14,
                  ha='center',
                  va='baseline',
                  x=mid,
-                 y=.81)
+                 y=.85)
 
-    ax.legend(title='Salários mínimos\n(Ano ref. 2018, R$ 954,00)',
+    ax.legend(title='Escolaridade',
               labels=labels.values(),
               labelcolor='#303030',
               loc="center left",
@@ -55,16 +58,15 @@ def plot_pie(df, labels, title):
 #data = load_and_prepare_data()
 
 renda_familiar_labels = {
-    'A': 'Até 1,5\n(até R$ 1.431,00)',
-    'B': 'De 1,5 a 3\n(R$ 1.431,01 \na R$ 2.862,00)',
-    'C': 'De 3 a 4,5\n(R$ 2.862,01 \na R$ 4.293,00)',
-    'D': 'De 4,5 a 6\n(R$ 4.293,01 \na R$ 5.724,00)',
-    'E': 'De 6 a 10\n(R$ 5.724,01 \na R$ 9.540,00)',
-    'F': 'De 10 a 30\n(R$ 9.540,01 \na R$ 28.620,00)',
-    'G': 'Acima de 30\n(mais de\nR$ 28.620,00)'
+    'A': 'Nenhuma',
+    'B': 'Fundamental até o 5º',
+    'C': 'Fundamental até o 9º',
+    'D': 'Médio',
+    'E': 'Superior',
+    'F': 'Pós-graduação',
 }
 
-plot_pie(data.QE_I08, renda_familiar_labels, 'Renda familiar todos os cursos')
+plot_pie(pd.concat([data.QE_I04, data.QE_I05]), renda_familiar_labels, 'Renda familiar todos os cursos')
 
 '''renda_medicina = data[data.CO_GRUPO == 23].QE_I08
 plot_pie(renda_medicina, renda_familiar_labels, 'Renda familiar: Curso de Enfermagem')
