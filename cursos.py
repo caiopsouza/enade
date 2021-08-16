@@ -1,79 +1,36 @@
-import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
-from charts_params import renda_colors
-import math
 import matplotlib.patches as mpatches
 
+from data_keys import load_and_prepare_data, cursos_names
 
-def load_and_prepare_data():
-    df = pd.read_csv('data/microdados_enade_2019/3.DADOS/microdados_enade_2019.txt', sep=";")
 
-    df.drop(df[df.QE_I08 == ' '].index, inplace=True)
+def load_and_prepare_renda_data():
+    df = load_and_prepare_data()
+
+    renda_familiar_values = {
+        'A': 1.5,
+        'B': (1.5 + 3) / 2,
+        'C': (3 + 4.5) / 2,
+        'D': (4.5 + 6) / 2,
+        'E': (6 + 10) / 2,
+        'F': (10 + 30) / 2,
+        'G': 30
+    }
 
     df.QE_I08.replace(renda_familiar_values, inplace=True)
 
     return df
 
 
-def count_and_rename_labels(df, labels, normalize=False):
-    return df \
-        .value_counts(normalize=normalize) \
-        .sort_index() \
-        .rename(labels)
-
-
-renda_familiar_values = {
-    'A': 1.5,
-    'B': (1.5 + 3) / 2,
-    'C': (3 + 4.5) / 2,
-    'D': (4.5 + 6) / 2,
-    'E': (6 + 10) / 2,
-    'F': (10 + 30) / 2,
-    'G': 30
-}
-
-cursos_values = {
-    0: 'Geral',
-    5: 'Veterinária',
-    6: 'Odontologia',
-    12: 'Medicina',
-    17: 'Agronomia',
-    19: 'Farmácia',
-    21: 'Arquitetura e Urbanismo',
-    23: 'Enfermagem',
-    27: 'Fonoaudiologia',
-    28: 'Nutrição',
-    36: 'Fisioterapia',
-    51: 'Zootecnia',
-    55: 'Biomedicina',
-    69: 'Tec. em Radiologia',
-    90: 'Tec. em Agronegócios',
-    91: 'Tec. em Gestão Hospitalar',
-    92: 'Tec. em Gestão Ambiental',
-    95: 'Tec. em Estética e Cosmética',
-    3501: 'Educação Física (Bacharelado)',
-    4003: 'Eng. da Computação',
-    5710: 'Eng. Civil',
-    5806: 'Eng. Elétrica',
-    5814: 'Eng. de Controle e Automação',
-    5902: 'Eng. Mecânica',
-    6002: 'Eng. de Alimentos',
-    6008: 'Eng. Química',
-    6208: 'Eng. de Produção',
-    6307: 'Eng. Ambiental',
-    6405: 'Eng. Florestal',
-    6410: 'Tec. em Segurança no Trabalho',
-}
-
-df = load_and_prepare_data()
+df = load_and_prepare_renda_data()
 
 renda_por_curso = df[['CO_GRUPO', 'QE_I08']] \
     .groupby(by='CO_GRUPO') \
     .mean() \
     .reset_index()
 
-renda_por_curso['CO_GRUPO'].replace(cursos_values, inplace=True)
+renda_por_curso['CO_GRUPO'].replace(cursos_names, inplace=True)
 
 renda_geral_mean = df.QE_I08.mean()
 
@@ -126,4 +83,5 @@ plt.legend(prop={'size': 18}, handles=[
 ])
 
 plt.tight_layout()
-plt.savefig('plots/renda-media-curso.png')
+plt.show()
+plt.close()

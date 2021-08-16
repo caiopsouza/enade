@@ -1,13 +1,14 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from charts_params import renda_colors
 import matplotlib.patches as mpatches
+
+from data_keys import load_and_prepare_data, cursos_names
 
 columns_questionario = [f'QE_I{c}' for c in range(27, 69)]
 
 
-def load_and_prepare_data():
-    df = pd.read_csv('data/microdados_enade_2019/3.DADOS/microdados_enade_2019.txt', sep=";")
+def load_and_prepare_questionario_data():
+    df = load_and_prepare_data()
 
     columns = ['CO_GRUPO'] + columns_questionario
     df = df[columns]
@@ -32,40 +33,7 @@ def load_and_prepare_data():
     return df
 
 
-cursos_values = {
-    0: 'Geral',
-    5: 'Veterinária',
-    6: 'Odontologia',
-    12: 'Medicina',
-    17: 'Agronomia',
-    19: 'Farmácia',
-    21: 'Arquitetura e Urbanismo',
-    23: 'Enfermagem',
-    27: 'Fonoaudiologia',
-    28: 'Nutrição',
-    36: 'Fisioterapia',
-    51: 'Zootecnia',
-    55: 'Biomedicina',
-    69: 'Tec. em Radiologia',
-    90: 'Tec. em Agronegócios',
-    91: 'Tec. em Gestão Hospitalar',
-    92: 'Tec. em Gestão Ambiental',
-    95: 'Tec. em Estética e Cosmética',
-    3501: 'Educação Física (Bacharelado)',
-    4003: 'Eng. da Computação',
-    5710: 'Eng. Civil',
-    5806: 'Eng. Elétrica',
-    5814: 'Eng. de Controle e Automação',
-    5902: 'Eng. Mecânica',
-    6002: 'Eng. de Alimentos',
-    6008: 'Eng. Química',
-    6208: 'Eng. de Produção',
-    6307: 'Eng. Ambiental',
-    6405: 'Eng. Florestal',
-    6410: 'Tec. em Segurança no Trabalho',
-}
-
-# data = load_and_prepare_data()
+data = load_and_prepare_questionario_data()
 
 data['total'] = data[columns_questionario].sum(axis=1)
 df = data[['CO_GRUPO', 'total']]
@@ -90,7 +58,7 @@ df = df \
     .mean() \
     .reset_index()
 
-df['CO_GRUPO'] = df['CO_GRUPO'].replace(cursos_values)
+df['CO_GRUPO'] = df['CO_GRUPO'].replace(cursos_names)
 
 nota_geral = pd.DataFrame([['Geral', nota_mean]], columns=['CO_GRUPO', 'total'], index=[29])
 df = df.append(nota_geral)
@@ -118,11 +86,11 @@ plt.title('Satisfação média por curso\n\n',
           x=0.425)
 
 plt.suptitle(f'Notas entre 0 e 210',
-                 fontsize=14,
-                 ha='center',
-                 va='baseline',
-                 x=mid,
-                 y=.9)
+             fontsize=14,
+             ha='center',
+             va='baseline',
+             x=mid,
+             y=.9)
 
 for i, v in enumerate(cursos_valores):
     ax.text(v + .05, i, "{:2.2f}".format(v), color=cursos_colors[i], fontsize=12, fontweight='bold', va='center')
@@ -135,3 +103,4 @@ plt.legend(prop={'size': 18}, handles=[
 
 plt.tight_layout()
 plt.show()
+plt.close()
